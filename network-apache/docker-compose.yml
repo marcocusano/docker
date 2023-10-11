@@ -1,0 +1,26 @@
+version: "3"
+name: "network-apache"
+services:
+
+    php:
+        container_name: network_apache_php
+        image: php:${PHP_VERSION}-apache
+        restart: "no"
+        env_file:
+            - ".env"
+        ports:
+            - ${PHP_PORT}
+        volumes:
+            - "${PHP_INI}"
+            - "${SOURCE_PHP}"
+            - "${APACHE_CONFIG}"
+        command: >
+            bash -c "docker-php-ext-install mysqli && docker-php-entrypoint apache2-foreground"
+        networks:
+            - database
+
+networks:
+    database:
+        external: true
+        name: database
+        

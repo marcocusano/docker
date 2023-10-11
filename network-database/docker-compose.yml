@@ -1,0 +1,48 @@
+version: '3'
+name: "network-database"
+services:
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: network_phpmyadmin
+        ports:
+            - "8080:80"
+        environment:
+            #- PMA_ARBITRARY=1
+            - PMA_HOST=${MYSQL_HOST}
+            - UPLOAD_LIMIT=${MYSQL_UPLOAD_LIMIT}
+        restart: "always"
+        depends_on:
+            - mysql
+        networks:
+            - phpmyadmin
+            - database
+
+    mysql:
+        image: mysql:${MYSQL_VERSION}
+        container_name: network_mysql
+        restart: "always"
+        env_file:
+            - ".env"
+        environment:
+            - DB_HOST=${MYSQL_HOST}
+            - MYSQL_HOST=${MYSQL_HOST}
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        ports:
+            - ${MYSQL_PORT}
+        volumes:
+            - "${MYSQL_SOURCE}"
+        networks:
+            - mysql
+            - database
+
+networks:
+    phpmyadmin:
+        name: phpmyadmin
+    mysql:
+        name: mysql
+    database:
+        name: database

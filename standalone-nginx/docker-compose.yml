@@ -1,0 +1,68 @@
+version: "3"
+name: "standalone-nginx"
+services:
+
+    mysql:
+        image: mysql:${MYSQL_VERSION}
+        container_name: standalone_nginx_mysql
+        restart: "no"
+        env_file:
+            - ".env"
+        environment:
+            - DB_HOST=${MYSQL_HOST}
+            - MYSQL_HOST=${MYSQL_HOST}
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+
+        ports:
+            - ${MYSQL_PORT}
+        volumes:
+            - "${SOURCE_MYSQL}"
+
+    nginx:
+        container_name: standalone_nginx
+        image: nginx:alpine
+        volumes:
+            - "${NGINX_DEFAULT_CONFIG}"
+            - "${NGINX_SSL}"
+            - "${SOURCE_NGINX}"
+            - "${NGINX_DEFAULT_CONFIG_TEMPLATE}"
+        ports:
+            - "${NGINX_PORT}"
+            #- "${NGINX_PORT_SECURE}"
+            #- "${NGINX_PORT_SSL}"
+            - "${NGINX_PORT_SSL_SECURE}"
+        env_file:
+            - ".env"
+        environment:
+            - NGINX_HOST=${NGINX_HOST}
+        command: /bin/sh -c "envsubst '$$NGINX_HOST' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+        restart: "no"
+        depends_on:
+            - php
+            - mysql
+
+    phpmyadmin:
+        container_name: standalone_nginx_phpmyadmin
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - "${PHP_ADMIN_PORT}"
+        environment:
+            #- PMA_ARBITRARY=1
+            - PMA_HOST=${MYSQL_HOST}
+            - UPLOAD_LIMIT=${MYSQL_UPLOAD_LIMIT}
+        restart: "no"
+        depends_on:
+            - mysql
+
+
+    php:
+        container_name: standalone_nginx_php
+        image: nanoninja/php-fpm:${PHP_VERSION}
+        restart: "no"
+        volumes:
+            - "${PHP_INI}"
+            - "${SOURCE_PHP}"
+        

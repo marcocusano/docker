@@ -1,0 +1,44 @@
+version: "3"
+name: "network-nginx"
+services:
+
+    nginx:
+        container_name: network_nginx
+        image: nginx:alpine
+        volumes:
+            - "${NGINX_DEFAULT_CONFIG}"
+            - "${NGINX_SSL}"
+            - "${SOURCE_NGINX}"
+            - "${NGINX_DEFAULT_CONFIG_TEMPLATE}"
+        ports:
+            - "${NGINX_PORT}"
+            #- "${NGINX_PORT_SECURE}"
+            #- "${NGINX_PORT_SSL}"
+            - "${NGINX_PORT_SSL_SECURE}"
+        env_file:
+            - ".env"
+        environment:
+            - NGINX_HOST=${NGINX_HOST}
+        command: /bin/sh -c "envsubst '$$NGINX_HOST' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+        restart: "no"
+        depends_on:
+            - php
+        networks:
+            - database
+
+
+    php:
+        container_name: network_nginx_php
+        image: nanoninja/php-fpm:${PHP_VERSION}
+        restart: "no"
+        volumes:
+            - "${PHP_INI}"
+            - "${SOURCE_PHP}"
+        networks:
+            - database
+
+networks:
+    database:
+        external: true
+        name: database
+        
