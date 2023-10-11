@@ -16,7 +16,6 @@ Which means that you can build your Apache/NGINX application by starting that sp
 - Join the `./standalone-nginx` dir;
 - Run `docker-compose up`;
 - Start coding in `./src/public`;
-- Manage your database from `http://localhost:8080` using the credentials `root:root`
 
 ## Network Quickstarts
 By using a networked container you'll be able to access other containers in order to use parts of it.\
