@@ -54,8 +54,7 @@ your_service:
 - Start coding in `./src/public`
 
 ## Database
-By using a Networked or a Standalone container you can manage your database by using phpMyAdmin on `http://localhost:8080`, with the credentials `root:root`. Instead by using the credentials `dev:dev` you'll join just a `test` database.\
-The database host is `mysql:3306` on default port `3306`.\
+By using a Networked or a Standalone container you can manage your database by using phpMyAdmin on `http://localhost:8080`, with the credentials `root:root`. Instead by using the credentials `dev:dev` you'll join just a `test` database. The database host is `mysql:3306`.\
 Don't forget, in case of Networked container usage, make sure that `network-database` is running.
 
 ## .ENV
